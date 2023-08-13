@@ -20,15 +20,15 @@ You are now connected to database "nc_flix" as user "yoonhee".
  2. Here is a comprehensive output of the customers ordered by loyalty points, and grouped by area:
  customer_name | age |  location  | loyalty_points 
 ---------------+-----+------------+----------------
- Haz           |  30 | Bolton     |               
+ Haz           |  31 | Bolton     |               
  Paul C        |  32 | Bolton     |            198
  Liam          |  29 | Leeds      |               
  David         |  30 | Leeds      |            202
  Vel           |  34 | Leeds      |             14
  Jim           |  34 | Leeds      |             14
  Verity        |  26 | Leicester  |               
- Joe           |  33 | Liverpool  |             13
- Alex          |  21 | Manchester |           1045
+ Joe           |  34 | Liverpool  |             13
+ Alex          |  22 | Manchester |           1045
  Duncan        |  29 | Manchester |             99
  Cat           |  37 | Manchester |             29
 (11 rows)

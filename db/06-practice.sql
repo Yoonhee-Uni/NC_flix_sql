@@ -110,3 +110,61 @@ LEFT JOIN movies
 ON stock.movie_id = movies.movie_id
 GROUP BY stores.store_id, city;
 
+
+\echo 'valued_cust'
+
+SELECT city, customer_name, rental_count
+FROM(
+SELECT stores.city AS city, customers.customer_name, COUNT(rental.stock_id) AS rental_count,
+ROW_NUMBER() OVER(PARTITION BY stores.city ORDER BY COUNT(rental.stock_id)DESC) AS row_num
+FROM rental
+JOIN customers
+ON customers.customer_id = rental.customer_id
+JOIN stores
+ON stores.city = customers.location
+GROUP BY stores.city, customers.customer_name
+) ranked_data
+WHERE row_num = 1 
+ORDER BY city;
+
+\echo 'join practice without order'
+-- SELECT city, movies_genres.movie_id 
+-- FROM stores
+-- JOIN stock
+-- ON stores.store_id = stock.store_id
+-- JOIN movies_genres
+-- ON stock.movie_id = movies_genres.movie_id
+-- ;
+
+SELECT city, movies_genres.movie_id 
+FROM stock
+JOIN stores
+ON stock.store_id = stores.store_id
+JOIN movies_genres
+ON movies_genres.movie_id = stock.movie_id
+;
+
+\echo 'join practice without order2'
+-- this doesn't work!
+
+-- SELECT rental_id, stock_id, stores.city
+-- FROM rental
+-- JOIN stores
+-- ON stock.store_id = stores.store_id;
+
+
+        SELECT 
+            stores.city AS city,
+            movies.title AS movie_name,
+            COUNT(rental.stock_id) AS rental_count,
+            ROW_NUMBER() OVER(PARTITION BY stores.city ORDER BY COUNT(rental.stock_id) DESC) AS row_num
+        FROM rental
+        JOIN stock
+        ON rental.stock_id = stock.stock_id
+        JOIN stores
+        ON stock.store_id = stores.store_id
+        JOIN movies
+        ON stock.movie_id = movies.movie_id  
+        GROUP BY stores.city, movies.title  
+        ;
+        
