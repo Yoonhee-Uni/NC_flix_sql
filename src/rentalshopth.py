@@ -79,6 +79,6 @@ def select_movies(sort_by='title', order= 'ASC', min_rating = None, location = N
             conn.close()
             print('Database connection closed.')    
 
-if __name__ == '__main__':
-    config()
-    select_movies(location = 'Manchester')   
+# if __name__ == '__main__':
+#     config()
+#     select_movies(location = 'Manchester')   
