@@ -143,43 +143,6 @@ def rental_info():
         
         
         
-        
-        
-        
-#         f''' 
-#         SELECT 
-#         stores.store_id, 
-#         stores.city, 
-#         COUNT(DISTINCT customers.customer_id) AS Number_of_customers,
-#         COUNT(DISTINCT stock.stock_id) AS Film_available
-       
-#         FROM stores
-        
-#         LEFT JOIN customers
-#         ON customers.location = stores.city
-#         JOIN stock
-#         ON stores.store_id = stock.store_id
-#         JOIN rental
-#         ON rental.stock_id = stock.stock_id 
-#         GROUP BY stores.store_id, customers.location
-#         '''
-#         \echo 'valued_cust'
-
-# SELECT city, customer_name, rental_count
-# FROM(
-# SELECT stores.city AS city, customers.customer_name, COUNT(rental.stock_id) AS rental_count,
-# ROW_NUMBER() OVER(PARTITION BY stores.city ORDER BY COUNT(rental.stock_id)DESC) AS row_num
-# FROM rental
-# JOIN customers
-# ON customers.customer_id = rental.customer_id
-# JOIN stores
-# ON stores.city = customers.location
-# GROUP BY stores.city, customers.customer_name
-# ) ranked_data
-# WHERE row_num = 1 
-# ORDER BY city;
-
-
         df_one = pd.read_sql_query(query, conn)
         print(df_one)
         cur.close()
@@ -192,7 +155,51 @@ def rental_info():
             conn.close()
             print('Database connection closed.') 
 
-rental_info()
 
+def low_rated_movies(location = None):
+    conn = None
+    try:
+        params =config()
+        print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+
+    
+
+        request = f'''
+            WITH low_rate AS (
+                    SELECT 
+                    genre_name,
+                    title AS film_title,
+                    rating,
+                    ROW_NUMBER() OVER (PARTITION BY genres.genre_name ORDER BY movies.rating ASC) AS low_rating
+                    
+                    FROM genres
+
+                    JOIN movies_genres
+                    ON genres.genre_id = movies_genres.genre_id
+                    JOIN movies
+                    ON movies_genres.movie_id = movies.movie_id
+                    GROUP BY genres.genre_name, title, movies.rating
+                    )
+                    SELECT genre_name, film_title, rating
+                    FROM low_rate
+                    WHERE low_rating = 1;
+                    '''
+        
+        
+        df_one = pd.read_sql_query(request, conn)
+        
+        data=df_one
+        cur.close()
+
+        print(data)                         
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            print('Database connection closed.') 
+low_rated_movies()
 
 
